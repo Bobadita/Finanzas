@@ -1,0 +1,1965 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#f5f6fa">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mis Finanzas">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%234f46e5'/%3E%3Cpath d='M14 44l11-11 8 6 13-16' fill='none' stroke='%23fff' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<title>Mis Finanzas · Contabilidad personal</title>
+<style>
+  /* ============================================================
+     MIS FINANZAS · estilos
+     Tema claro, sin dependencias externas.
+     ============================================================ */
+  :root{
+    --bg:#f5f6fa;
+    --surface:#ffffff;
+    --surface-2:#fafbfe;
+    --ink:#0f172a;
+    --ink-2:#334155;
+    --muted:#64748b;
+    --line:#e5e8f0;
+    --brand:#4f46e5;
+    --brand-2:#6366f1;
+    --brand-soft:#eef0ff;
+    --green:#0e9f6e;
+    --green-soft:#e8f8f1;
+    --red:#e02424;
+    --red-soft:#fdeeee;
+    --amber:#b45309;
+    --amber-soft:#fdf4e3;
+    --radius:16px;
+    --shadow:0 1px 2px rgba(15,23,42,.04), 0 8px 24px -14px rgba(15,23,42,.25);
+  }
+
+  *,*::before,*::after{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:var(--bg); color:var(--ink);
+    font-size:15px; line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,p{ margin:0; }
+  button{ font:inherit; }
+  [hidden]{ display:none !important; }
+  .sr-only{
+    position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+    overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+  }
+
+  /* ---------- Barra superior ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:30;
+    background:rgba(245,246,250,.86);
+    -webkit-backdrop-filter:blur(10px);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-in{
+    max-width:1180px; margin:0 auto; padding:13px 20px;
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  }
+  .brand{ display:flex; align-items:center; gap:12px; margin-right:auto; min-width:0; }
+  .logo{
+    width:40px; height:40px; border-radius:12px; flex:0 0 auto;
+    background:linear-gradient(135deg,var(--brand),#8b5cf6);
+    display:grid; place-items:center; color:#fff;
+    box-shadow:0 8px 18px -8px rgba(79,70,229,.9);
+  }
+  .brand h1{ font-size:16.5px; letter-spacing:-.25px; }
+  .brand p{ font-size:12.5px; color:var(--muted); }
+  .top-actions{ display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
+
+  /* ---------- Botones ---------- */
+  .btn{
+    font-weight:600; font-size:14px; border-radius:11px;
+    border:1px solid transparent; padding:9px 14px; cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center; gap:7px;
+    background:#fff; color:var(--ink); text-decoration:none;
+    transition:background .15s, border-color .15s, transform .12s, box-shadow .15s;
+    white-space:nowrap;
+  }
+  .btn:hover{ transform:translateY(-1px); }
+  .btn:active{ transform:none; }
+  .btn:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
+  .btn-primary{ background:var(--brand); color:#fff; box-shadow:0 8px 18px -10px rgba(79,70,229,1); }
+  .btn-primary:hover{ background:#4338ca; }
+  .btn-ghost{ background:#fff; border-color:var(--line); color:var(--ink-2); }
+  .btn-ghost:hover{ background:var(--surface-2); border-color:#d4daea; }
+  .btn-danger{ background:#fff; border-color:#f3c9c9; color:var(--red); }
+  .btn-danger:hover{ background:var(--red-soft); }
+  .btn-sm{ padding:6px 11px; font-size:13px; border-radius:9px; }
+  .btn-icon{ padding:9px; width:38px; height:38px; }
+  .btn-block{ width:100%; }
+  .btn.cargando svg{ animation:giro 1s linear infinite; }
+  @keyframes giro{ to{ transform:rotate(360deg); } }
+
+  /* ---------- Píldora de estado ---------- */
+  .pill{
+    font-size:12.5px; font-weight:600; padding:6px 11px; border-radius:999px;
+    border:1px solid var(--line); background:#fff; color:var(--muted);
+    display:inline-flex; align-items:center; gap:6px; cursor:pointer;
+    max-width:230px; overflow:hidden; text-overflow:ellipsis;
+  }
+  .pill .dot{ width:7px; height:7px; border-radius:50%; background:currentColor; flex:0 0 auto; }
+  .pill.ok{ color:var(--green); background:var(--green-soft); border-color:#c8ecdd; }
+  .pill.sync{ color:var(--brand); background:var(--brand-soft); border-color:#d9ddff; }
+  .pill.sync .dot{ animation:pulso 1s infinite; }
+  .pill.err{ color:var(--red); background:var(--red-soft); border-color:#f7d4d4; }
+  .pill.warn{ color:var(--amber); background:var(--amber-soft); border-color:#f2e0bd; }
+  @keyframes pulso{ 0%,100%{ opacity:1; } 50%{ opacity:.25; } }
+
+  /* ---------- Contenedor ---------- */
+  main{ max-width:1180px; margin:0 auto; padding:20px 20px 64px; }
+
+  .banner{
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    background:var(--amber-soft); border:1px solid #f2e0bd; color:#7c4a06;
+    padding:12px 16px; border-radius:12px; margin-bottom:16px; font-size:14px;
+  }
+  .banner .btn{ margin-left:auto; }
+
+  /* ---------- Tarjetas de estadísticas ---------- */
+  .stats{ display:grid; grid-template-columns:1.35fr 1fr 1fr 1fr; gap:14px; margin-bottom:16px; }
+  .card{
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius); box-shadow:var(--shadow);
+  }
+  .stat{ padding:15px 17px; display:flex; flex-direction:column; gap:5px; min-width:0; }
+  .stat .label{
+    font-size:11.5px; font-weight:700; letter-spacing:.07em;
+    text-transform:uppercase; color:var(--muted);
+  }
+  .stat .value{
+    font-size:clamp(19px,2.1vw,25px); font-weight:700; letter-spacing:-.6px;
+    font-variant-numeric:tabular-nums; white-space:nowrap;
+    overflow:hidden; text-overflow:ellipsis;
+  }
+  .stat .hint{ font-size:12px; color:var(--muted); }
+  .stat.balance{ background:linear-gradient(155deg,#fff,#f7f7ff 70%,#f1f1ff); }
+  .value.pos{ color:var(--green); }
+  .value.neg{ color:var(--red); }
+
+  .aviso{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    font-size:13px; color:#7c4a06; background:var(--amber-soft);
+    border:1px solid #f2e0bd; border-radius:12px; padding:10px 14px; margin-bottom:16px;
+  }
+  .aviso .btn{ margin-left:auto; }
+
+  /* ---------- Distribución ---------- */
+  .layout{ display:grid; grid-template-columns:365px minmax(0,1fr); gap:16px; align-items:start; }
+  .col{ display:grid; gap:16px; min-width:0; }
+
+  .card-head{
+    display:flex; align-items:center; gap:10px;
+    padding:13px 16px; border-bottom:1px solid var(--line);
+  }
+  .card-head h2{ font-size:13.5px; font-weight:700; letter-spacing:.01em; }
+  .card-head .spacer{ margin-left:auto; }
+  .card-body{ padding:16px; }
+
+  /* ---------- Formulario ---------- */
+  .field{ display:flex; flex-direction:column; gap:6px; margin-bottom:12px; }
+  .field:last-of-type{ margin-bottom:14px; }
+  .field > label{ font-size:12.5px; font-weight:600; color:var(--ink-2); }
+  .field .opt{ color:var(--muted); font-weight:400; }
+
+  input[type=text],input[type=number],input[type=date],input[type=month],
+  input[type=url],input[type=password],select,textarea{
+    font:inherit; width:100%; padding:10px 12px; color:var(--ink);
+    background:#fff; border:1px solid var(--line); border-radius:10px;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  input:focus,select:focus,textarea:focus{
+    outline:none; border-color:var(--brand-2);
+    box-shadow:0 0 0 3px rgba(99,102,241,.16);
+  }
+  input::placeholder{ color:#9aa4b8; }
+  .row-2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .hint{ font-size:12px; color:var(--muted); }
+  .hint.center{ text-align:center; }
+  .hint code{ background:#f1f3f9; padding:1px 5px; border-radius:5px; font-size:11.5px; }
+
+  .seg{
+    display:grid; grid-template-columns:1fr 1fr; gap:4px;
+    background:#eef0f7; padding:4px; border-radius:11px; position:relative;
+  }
+  .seg input{ position:absolute; width:1px; height:1px; opacity:0; pointer-events:none; }
+  .seg label{
+    text-align:center; padding:8px 6px; border-radius:8px;
+    font-size:13.5px; font-weight:600; color:var(--muted);
+    cursor:pointer; user-select:none; transition:.15s;
+  }
+  .seg input:checked + label{ background:#fff; color:var(--ink); box-shadow:0 1px 3px rgba(15,23,42,.14); }
+  .seg input[value="ingreso"]:checked + label{ color:var(--green); }
+  .seg input[value="gasto"]:checked + label{ color:var(--red); }
+  .seg.mini{ display:flex; gap:2px; padding:3px; }
+  .seg.mini label{ padding:5px 10px; font-size:12px; }
+
+  .field-error{
+    font-size:12.5px; color:var(--red); background:var(--red-soft);
+    border:1px solid #f7d4d4; border-radius:9px; padding:8px 10px; margin:0 0 12px;
+  }
+
+  /* ---------- Tabla de movimientos ---------- */
+  .list-tools{
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    padding:11px 16px; border-bottom:1px solid var(--line); background:var(--surface-2);
+  }
+  .list-tools input[type=month]{ width:auto; padding:6px 10px; font-size:13px; border-radius:9px; }
+  .muted{ color:var(--muted); }
+  .small{ font-size:12.5px; }
+
+  .table-wrap{ overflow-x:auto; }
+  table{ width:100%; border-collapse:collapse; font-size:14px; }
+  thead th{
+    text-align:left; font-size:11px; font-weight:700; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--muted);
+    padding:9px 12px; background:var(--surface-2); border-bottom:1px solid var(--line);
+    white-space:nowrap;
+  }
+  thead th.num{ text-align:right; }
+  tbody td{ padding:10px 12px; border-bottom:1px solid #f0f2f8; vertical-align:middle; }
+  tbody tr:last-child td{ border-bottom:none; }
+  tbody tr:hover{ background:#fafbff; }
+  .col-fecha{ white-space:nowrap; color:var(--ink-2); font-size:13px; }
+  .desc{ max-width:330px; }
+  .desc .desc-txt{ display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .num{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; font-weight:600; }
+  .num.ingreso{ color:var(--green); }
+  .equiv{ display:block; font-size:11px; font-weight:600; color:var(--muted); margin-top:1px; }
+  .tipo{ display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; white-space:nowrap; }
+  .tipo i{ width:7px; height:7px; border-radius:50%; background:currentColor; display:inline-block; }
+  .tipo.gasto{ color:var(--red); }
+  .tipo.ingreso{ color:var(--green); }
+  .cat-tag{
+    display:inline-block; font-size:11.5px; font-weight:600; color:var(--ink-2);
+    background:#f1f3f9; border-radius:6px; padding:3px 8px; white-space:nowrap;
+  }
+  .badge{ font-size:10.5px; font-weight:700; letter-spacing:.03em; padding:3px 7px; border-radius:6px; background:var(--brand-soft); color:var(--brand); }
+  .badge.pend{ background:var(--amber-soft); color:var(--amber); }
+  .icon-btn{
+    width:30px; height:30px; display:grid; place-items:center; padding:0;
+    border:1px solid transparent; border-radius:8px; background:transparent;
+    color:#94a0b5; cursor:pointer; transition:.15s;
+  }
+  .icon-btn:hover{ color:var(--red); background:var(--red-soft); border-color:#f7d4d4; }
+
+  .empty{
+    display:flex; flex-direction:column; gap:4px; align-items:center;
+    text-align:center; padding:46px 22px; color:var(--muted); font-size:13.5px;
+  }
+  .empty strong{ color:var(--ink-2); font-size:14.5px; }
+
+  /* ---------- Resumen por categoría ---------- */
+  .cat{ display:flex; flex-direction:column; gap:9px; }
+  .cat-row{ display:grid; grid-template-columns:1fr auto; gap:5px 10px; font-size:13.5px; }
+  .cat-name{ font-weight:600; color:var(--ink-2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .cat-val{ font-variant-numeric:tabular-nums; font-weight:600; }
+  .cat-bar{ grid-column:1 / -1; height:6px; border-radius:99px; background:#eef0f7; overflow:hidden; }
+  .cat-bar i{ display:block; height:100%; border-radius:99px; transition:width .3s; }
+  .cat-total{
+    display:flex; justify-content:space-between; gap:10px;
+    border-top:1px solid var(--line); margin-top:12px; padding-top:10px;
+    font-size:13px; color:var(--muted);
+  }
+  .cat-total b{ color:var(--ink); font-variant-numeric:tabular-nums; }
+
+  /* ---------- Diálogo de ajustes ---------- */
+  dialog{
+    border:none; padding:0; border-radius:18px;
+    width:min(540px, calc(100% - 28px));
+    box-shadow:0 40px 90px -30px rgba(2,6,23,.55);
+    color:var(--ink); background:var(--surface);
+  }
+  dialog::backdrop{ background:rgba(15,23,42,.45); -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px); }
+  .dlg-head{ display:flex; gap:12px; align-items:flex-start; padding:18px 20px 14px; border-bottom:1px solid var(--line); }
+  .dlg-head h2{ font-size:16px; }
+  .dlg-head p{ font-size:12.5px; color:var(--muted); margin-top:2px; }
+  .dlg-head .btn{ margin-left:auto; flex:0 0 auto; }
+  .dlg-body{ padding:18px 20px; max-height:min(62vh,520px); overflow:auto; }
+  .dlg-foot{ display:flex; gap:10px; justify-content:flex-end; padding:14px 20px 18px; border-top:1px solid var(--line); background:var(--surface-2); }
+  .dlg-actions{ display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
+  .dlg-note{
+    font-size:12px; color:var(--muted); background:var(--surface-2);
+    border:1px dashed var(--line); border-radius:10px; padding:10px 12px; margin:6px 0 10px;
+  }
+  .check{ display:flex; gap:9px; align-items:flex-start; font-size:13.5px; color:var(--ink-2); margin:4px 0 8px; cursor:pointer; }
+  .check input{ width:16px; height:16px; margin-top:2px; accent-color:var(--brand); }
+
+  /* ---------- Avisos flotantes ---------- */
+  #toasts{
+    position:fixed; left:50%; bottom:20px; transform:translateX(-50%);
+    z-index:100; display:flex; flex-direction:column; gap:8px;
+    width:min(460px, calc(100% - 28px)); pointer-events:none;
+  }
+  .toast{
+    background:#0f172a; color:#fff; font-size:13.5px; line-height:1.4;
+    padding:11px 14px; border-radius:12px;
+    box-shadow:0 16px 40px -16px rgba(2,6,23,.75);
+    animation:entra .18s ease;
+  }
+  .toast.ok{ background:#065f46; }
+  .toast.err{ background:#991b1b; }
+  .toast.warn{ background:#92400e; }
+  @keyframes entra{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
+
+  footer{ max-width:1180px; margin:0 auto; padding:0 20px 40px; color:var(--muted); font-size:12px; }
+  footer a{ color:var(--brand); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:1000px){
+    .layout{ grid-template-columns:1fr; }
+  }
+  @media (max-width:820px){
+    .stats{ grid-template-columns:1fr 1fr; gap:10px; }
+    .stat.balance{ grid-column:1 / -1; }
+    .stat{ padding:11px 13px; gap:3px; }
+    .stat .value{ font-size:20px; }
+    .stat.balance .value{ font-size:26px; }
+    .stat .label{ font-size:10.5px; }
+    .stat .hint{ font-size:11px; }
+    .brand p{ display:none; }
+  }
+  @media (max-width:560px){
+    /* En el teléfono el formulario debe quedar a la vista: se oculta
+       la tarjeta de conteo (el dato ya está en la lista). */
+    .stat:nth-child(4){ display:none; }
+  }
+  @media (max-width:720px){
+    main{ padding:16px 14px 60px; }
+    .topbar-in{ padding:11px 14px; }
+    .top-actions{ width:100%; }
+    .top-actions .btn-primary{ flex:1; }
+    /* La barra superior ocupa dos filas en el teléfono: el ancla del
+       formulario debe dejar espacio debajo de ella. */
+    .card{ scroll-margin-top:120px; }
+    thead{ display:none; }
+    table,tbody,tr,td{ display:block; width:auto; }
+    tbody tr{ position:relative; padding:12px 46px 12px 15px; border-bottom:1px solid #f0f2f8; }
+    tbody tr:hover{ background:transparent; }
+    tbody td{ padding:0; border:none; }
+    td.col-fecha{ font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+    td.col-tipo{ margin-top:3px; }
+    td.col-desc{ margin-top:5px; max-width:none; }
+    td.col-desc .desc-txt{ white-space:normal; }
+    td.col-cat{ display:none; }
+    td.col-monto{ margin-top:7px; text-align:left; font-size:15px; }
+    td.col-acc{ position:absolute; top:10px; right:10px; }
+  }
+  @media (max-width:480px){
+    .row-2{ grid-template-columns:1fr; }
+    .brand h1{ font-size:15.5px; }
+    .stat .value{ font-size:18px; }
+    .stat.balance .value{ font-size:24px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 17l5-5 4 3 6-7"></path><path d="M21 8V4h-4"></path>
+        </svg>
+      </div>
+      <div>
+        <h1>Mis Finanzas</h1>
+        <p>Contabilidad personal · Google Sheets</p>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <span class="pill" id="pill" role="status" aria-live="polite" title="Estado de la sincronización">
+        <span class="dot"></span><span id="pillTexto">Cargando…</span>
+      </span>
+      <button class="btn btn-primary" id="btnSync" type="button">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12a9 9 0 1 1-3-6.7"></path><path d="M21 3v6h-6"></path>
+        </svg>
+        Sincronizar
+      </button>
+      <button class="btn btn-ghost btn-icon" id="btnConfig" type="button" title="Ajustes" aria-label="Abrir ajustes">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <div class="banner" id="bannerConfig" hidden>
+    <span><strong>Aún no está conectada la nube.</strong> Pega la URL de tu Apps Script para sincronizar con Google Sheets.</span>
+    <button class="btn btn-primary btn-sm" id="btnConfigBanner" type="button">Configurar ahora</button>
+  </div>
+
+  <section class="stats" aria-label="Resumen del periodo">
+    <article class="card stat balance">
+      <span class="label">Balance</span>
+      <strong class="value" id="statBalance">—</strong>
+      <span class="hint" id="statHint">—</span>
+    </article>
+    <article class="card stat">
+      <span class="label">Ingresos</span>
+      <strong class="value pos" id="statIngresos">—</strong>
+      <span class="hint">en el periodo</span>
+    </article>
+    <article class="card stat">
+      <span class="label">Gastos</span>
+      <strong class="value" id="statGastos">—</strong>
+      <span class="hint">en el periodo</span>
+    </article>
+    <article class="card stat">
+      <span class="label">Movimientos</span>
+      <strong class="value" id="statCount">—</strong>
+      <span class="hint" id="statPend">—</span>
+    </article>
+  </section>
+
+  <div class="aviso" id="avisoTasa" hidden>
+    <span>Falta la tasa de cambio: los montos en otra moneda se suman sin convertir.</span>
+    <button class="btn btn-ghost btn-sm" id="btnTasa" type="button">Definir tasa</button>
+  </div>
+
+  <div class="layout">
+
+    <!-- ================= Columna izquierda ================= -->
+    <div class="col">
+
+      <section class="card" id="formCard">
+        <div class="card-head"><h2>Nuevo movimiento</h2></div>
+        <div class="card-body">
+          <form id="formMov" novalidate>
+            <div class="field">
+              <label>Tipo</label>
+              <div class="seg">
+                <input type="radio" name="tipo" id="tipoGasto" value="gasto" checked>
+                <label for="tipoGasto">Gasto</label>
+                <input type="radio" name="tipo" id="tipoIngreso" value="ingreso">
+                <label for="tipoIngreso">Ingreso</label>
+              </div>
+            </div>
+
+            <div class="row-2">
+              <div class="field">
+                <label for="monto">Monto</label>
+                <input type="text" id="monto" inputmode="decimal" placeholder="0,00" autocomplete="off" required>
+              </div>
+              <div class="field">
+                <label for="moneda">Moneda</label>
+                <select id="moneda">
+                  <option value="USD">USD (US$)</option>
+                  <option value="VES">Bs (VES)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="categoria">Categoría</label>
+              <select id="categoria"></select>
+            </div>
+
+            <div class="field">
+              <label for="descripcion">Descripción <span class="opt">(opcional)</span></label>
+              <input type="text" id="descripcion" maxlength="120" placeholder="Ej. Almuerzo, taxi, internet…" autocomplete="off">
+            </div>
+
+            <div class="field">
+              <label for="fecha">Fecha</label>
+              <input type="date" id="fecha" required>
+            </div>
+
+            <p class="field-error" id="errorForm" hidden></p>
+
+            <button type="submit" class="btn btn-primary btn-block">Guardar movimiento</button>
+            <p class="hint center" style="margin-top:10px">Se guarda al instante en este equipo y se sube a Google Sheets al sincronizar.</p>
+          </form>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>Resumen por categoría</h2>
+          <div class="spacer"></div>
+          <div class="seg mini">
+            <input type="radio" name="resumen" id="resGasto" value="gasto" checked>
+            <label for="resGasto">Gastos</label>
+            <input type="radio" name="resumen" id="resIngreso" value="ingreso">
+            <label for="resIngreso">Ingresos</label>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="cat" id="listaCategorias"></div>
+          <div class="cat-total" id="catTotal" hidden>
+            <span>Total</span><b id="catTotalValor">—</b>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ================= Columna derecha ================= -->
+    <div class="col">
+      <section class="card">
+        <div class="card-head">
+          <h2>Movimientos</h2>
+          <span class="muted small" id="contador">—</span>
+          <div class="spacer"></div>
+          <button class="btn btn-ghost btn-sm" id="btnExportar" type="button" title="Descargar todos los movimientos en CSV">Exportar CSV</button>
+          <button class="btn btn-ghost btn-sm" id="btnImportar" type="button" title="Cargar movimientos desde un CSV">Importar CSV</button>
+          <input type="file" id="archivoCSV" accept=".csv,text/csv" hidden>
+        </div>
+
+        <div class="list-tools">
+          <label class="sr-only" for="filtroMes">Filtrar por mes</label>
+          <input type="month" id="filtroMes">
+          <button class="btn btn-ghost btn-sm" id="btnTodo" type="button">Ver todo</button>
+          <div class="spacer" style="margin-left:auto"></div>
+          <span class="muted small" id="etiquetaPeriodo"></span>
+        </div>
+
+        <div class="table-wrap">
+          <table id="tabla">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th>Categoría</th>
+                <th class="num">Monto</th>
+                <th style="width:44px"><span class="sr-only">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="empty" id="vacio" hidden></div>
+      </section>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  Datos guardados en este navegador y en tu hoja de Google. Haz respaldos con <strong>Exportar CSV</strong>.
+</footer>
+
+<!-- ================= Diálogo de ajustes ================= -->
+<dialog id="dlgConfig" aria-labelledby="dlgTitulo">
+  <form id="formConfig" method="dialog" novalidate>
+    <div class="dlg-head">
+      <div>
+        <h2 id="dlgTitulo">Ajustes</h2>
+        <p>Conexión con Google Sheets y preferencias.</p>
+      </div>
+      <button type="button" class="btn btn-ghost btn-icon" id="btnCerrarDlg" aria-label="Cerrar">✕</button>
+    </div>
+
+    <div class="dlg-body">
+      <div class="field">
+        <label for="cfgWebhook">URL del webhook (Apps Script)</label>
+        <input type="url" id="cfgWebhook" placeholder="https://script.google.com/macros/s/AKfy…/exec" spellcheck="false" autocomplete="off">
+        <span class="hint">Debe terminar en <code>/exec</code>. Se obtiene al implementar el script como aplicación web.</span>
+      </div>
+
+      <div class="field">
+        <label for="cfgToken">Token (opcional)</label>
+        <input type="text" id="cfgToken" placeholder="Déjalo vacío si no usas token" spellcheck="false" autocomplete="off">
+        <span class="hint">Si lo usas debe coincidir con la constante <code>TOKEN</code> de <code>Code.gs</code>.</span>
+      </div>
+
+      <div class="row-2">
+        <div class="field">
+          <label for="cfgMoneda">Moneda de visualización</label>
+          <select id="cfgMoneda">
+            <option value="USD">Dólares (USD)</option>
+            <option value="VES">Bolívares (Bs)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="cfgTasa">Tasa (Bs por 1 USD)</label>
+          <input type="text" id="cfgTasa" inputmode="decimal" placeholder="Ej. 40,50" autocomplete="off">
+        </div>
+      </div>
+
+      <label class="check">
+        <input type="checkbox" id="cfgAuto">
+        <span>Sincronizar automáticamente al abrir y al volver a esta pestaña.</span>
+      </label>
+
+      <div class="dlg-note">
+        La app funciona sin conexión con los datos guardados en este navegador. Al sincronizar,
+        los movimientos nuevos se suben a la hoja y los de la hoja se descargan aquí.
+      </div>
+
+      <div class="dlg-actions">
+        <button type="button" class="btn btn-ghost btn-sm" id="btnProbar">Probar conexión</button>
+        <button type="button" class="btn btn-danger btn-sm" id="btnLimpiar">Borrar caché local</button>
+      </div>
+    </div>
+
+    <div class="dlg-foot">
+      <button type="button" class="btn btn-ghost" id="btnCancelar">Cancelar</button>
+      <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+<noscript>
+  <p style="padding:20px">Esta aplicación necesita JavaScript activado.</p>
+</noscript>
+
+<script>
+/* ============================================================================
+   MIS FINANZAS · lógica de la aplicación
+   HTML + CSS + JS vanilla, sin frameworks ni dependencias.
+   ----------------------------------------------------------------------------
+   Flujo de datos:
+     · state.nube       -> movimientos confirmados en Google Sheets (con caché)
+     · state.pendientes -> movimientos creados aquí que aún no están en la hoja
+     · Se muestran juntos; al sincronizar se suben los pendientes y se
+       descarga todo lo que haya en la hoja.
+   ============================================================================ */
+(function () {
+  'use strict';
+
+  /* ==========================================================================
+     1. CONFIGURACIÓN RÁPIDA
+     --------------------------------------------------------------------------
+     Pega abajo tu URL de Apps Script (termina en /exec).
+     También puedes dejarla vacía y configurarla desde el botón ⚙ de la app.
+     ========================================================================== */
+  const WEBHOOK_URL = ''; // <-- PEGA AQUÍ TU URL: https://script.google.com/macros/s/XXXX/exec
+
+  /* ==========================================================================
+     2. CONSTANTES
+     ========================================================================== */
+  const CLAVES = {
+    config: 'mf.v1.config',
+    nube: 'mf.v1.nube',
+    pendientes: 'mf.v1.pendientes'
+  };
+
+  const CATEGORIAS = {
+    gasto: ['Comida', 'Transporte', 'Servicios', 'Ocio', 'Salud', 'Otros'],
+    ingreso: ['Sueldo', 'Ventas', 'Freelance', 'Regalos', 'Otros']
+  };
+
+  const CONFIG_POR_DEFECTO = {
+    webhook: '',
+    token: '',
+    moneda: 'USD',   // moneda de visualización
+    tasa: 0,         // bolívares por 1 dólar
+    autoSync: true,
+    ultimaSync: 0
+  };
+
+  const COLORES = ['#4f46e5', '#7c3aed', '#0ea5e9', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#14b8a6', '#8b5cf6', '#64748b'];
+  const MAX_DESC = 200;
+  const MAX_CAT = 40;
+
+  const ICONO_BORRAR =
+    '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" ' +
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5"/></svg>';
+
+  /* ==========================================================================
+     3. ESTADO
+     ========================================================================== */
+  const state = {
+    config: Object.assign({}, CONFIG_POR_DEFECTO),
+    nube: [],
+    pendientes: [],
+    mes: mesActual(),      // '' = todo el historial
+    resumenTipo: 'gasto',
+    sincronizando: false,
+    estadoRed: 'ok',       // 'ok' | 'err'
+    ultimoError: ''
+  };
+
+  const el = function (sel) { return document.querySelector(sel); };
+
+  /* ==========================================================================
+     4. UTILIDADES
+     ========================================================================== */
+
+  function uid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  }
+
+  /** Redondea a 2 decimales (igual que el backend). */
+  function r2(n) {
+    return Math.round(Number(n) * 100) / 100;
+  }
+
+  /** Convierte "1.234,56", "1,234.56", "$ 12,50" o 12.5 en número. */
+  function aNumero(valor) {
+    if (typeof valor === 'number') return isFinite(valor) ? valor : NaN;
+
+    let s = String(valor === null || valor === undefined ? '' : valor)
+      .replace(/[^\d,.\-]/g, '')
+      .trim();
+    if (!s) return NaN;
+
+    const ultimaComa = s.lastIndexOf(',');
+    const ultimoPunto = s.lastIndexOf('.');
+
+    if (ultimaComa > -1 && ultimoPunto > -1) {
+      if (ultimaComa > ultimoPunto) s = s.replace(/\./g, '').replace(',', '.');
+      else s = s.replace(/,/g, '');
+    } else if (ultimaComa > -1) {
+      const partes = s.split(',');
+      if (partes.length === 2 && partes[1].length <= 2) s = partes[0] + '.' + partes[1];
+      else s = s.replace(/,/g, '');
+    }
+
+    const n = parseFloat(s);
+    return isNaN(n) ? NaN : n;
+  }
+
+  function limpiar(valor, maximo) {
+    return String(valor === null || valor === undefined ? '' : valor)
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, maximo || 300);
+  }
+
+  function esc(valor) {
+    const mapa = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    return String(valor === null || valor === undefined ? '' : valor).replace(/[&<>"']/g, function (c) {
+      return mapa[c];
+    });
+  }
+
+  function dosDigitos(n) {
+    return ('0' + n).slice(-2);
+  }
+
+  /** Fecha local de hoy en formato AAAA-MM-DD. */
+  function hoyISO() {
+    const d = new Date();
+    return d.getFullYear() + '-' + dosDigitos(d.getMonth() + 1) + '-' + dosDigitos(d.getDate());
+  }
+
+  function mesActual() {
+    return hoyISO().slice(0, 7);
+  }
+
+  /**
+   * El Atajo del iPhone abre la app con ?nuevo=1 para dejar el formulario
+   * listo (sin tener que buscar la tarjeta al abrir).
+   */
+  function modoNuevo() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const valor = params.get('nuevo');
+      return valor === '1' || valor === 'true' || valor === '';
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /** "2026-11-02" -> "02 nov" (o "02 nov 2025" si es otro año). */
+  function fechaLegible(iso) {
+    const partes = String(iso || '').split('-');
+    if (partes.length < 3) return iso || '—';
+    const d = new Date(Number(partes[0]), Number(partes[1]) - 1, Number(partes[2]));
+    if (isNaN(d.getTime())) return iso;
+
+    const mismoAnio = d.getFullYear() === new Date().getFullYear();
+    const texto = d.toLocaleDateString('es-VE', {
+      day: '2-digit',
+      month: 'short',
+      year: mismoAnio ? undefined : 'numeric'
+    });
+    return texto.replace(/\./g, '');
+  }
+
+  function nombreMes(ym) {
+    const partes = String(ym || '').split('-');
+    if (partes.length < 2) return 'Todo el historial';
+    const d = new Date(Number(partes[0]), Number(partes[1]) - 1, 1);
+    if (isNaN(d.getTime())) return ym;
+    const txt = d.toLocaleDateString('es-VE', { month: 'long', year: 'numeric' });
+    return txt.charAt(0).toUpperCase() + txt.slice(1);
+  }
+
+  function hora(ts) {
+    if (!ts) return '';
+    const d = new Date(ts);
+    return dosDigitos(d.getHours()) + ':' + dosDigitos(d.getMinutes());
+  }
+
+  function normalizarMoneda(valor) {
+    const s = String(valor === null || valor === undefined ? '' : valor)
+      .trim().toUpperCase().replace(/\s+/g, '');
+    if (!s) return state.config.moneda || 'USD';
+    if (s === 'USD' || s === '$' || s === 'US$' || s === 'DOLAR' || s === 'DOLARES') return 'USD';
+    if (s === 'VES' || s === 'VEF' || s === 'BS' || s === 'BS.' || s === 'BSF' || s === 'BSS' || s === 'BOLIVARES') return 'VES';
+    return 'USD';
+  }
+
+  function normalizarTipo(valor) {
+    const s = String(valor === null || valor === undefined ? '' : valor).trim().toLowerCase();
+    if (!s) return 'gasto';
+    if (s.indexOf('ing') === 0 || s === 'in' || s === '+' || s === 'entrada') return 'ingreso';
+    if (s.indexOf('gas') === 0 || s === 'out' || s === '-' || s === 'salida') return 'gasto';
+    return 'gasto';
+  }
+
+  /** Huella estable: debe coincidir exactamente con firma_() de Code.gs. */
+  function firma(m) {
+    const monto = isFinite(Number(m.monto)) ? r2(m.monto) : 0;
+    return [
+      m.fecha || '',
+      m.tipo || 'gasto',
+      limpiar(m.descripcion, MAX_DESC),
+      monto.toFixed(2),
+      limpiar(m.categoria, MAX_CAT) || 'Otros',
+      m.moneda || 'USD'
+    ].join('|');
+  }
+
+  /* ==========================================================================
+     5. FORMATO DE DINERO
+     ========================================================================== */
+
+  const formatoNumero = new Intl.NumberFormat('es-VE', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+
+  function money(valor) {
+    return moneyEn(valor, state.config.moneda);
+  }
+
+  /** Formatea un monto con el símbolo de su propia moneda. */
+  function moneyEn(valor, moneda) {
+    const abs = Math.abs(Number(valor) || 0);
+    const simbolo = normalizarMoneda(moneda) === 'VES' ? 'Bs ' : 'US$ ';
+    return simbolo + formatoNumero.format(abs);
+  }
+
+  function moneyConSigno(valor) {
+    return (Number(valor) < 0 ? '− ' : '') + money(valor);
+  }
+
+  /** Convierte un monto a la moneda de visualización. */
+  function convertir(monto, moneda) {
+    const vista = state.config.moneda;
+    const tasa = Number(state.config.tasa) || 0;
+    const m = Number(monto) || 0;
+    const origen = normalizarMoneda(moneda);
+
+    if (origen === vista) return m;
+    if (!(tasa > 0)) return m; // sin tasa no hay conversión posible (se avisa en pantalla)
+
+    return vista === 'USD' ? m / tasa : m * tasa;
+  }
+
+  /* ==========================================================================
+     6. PERSISTENCIA LOCAL
+     ========================================================================== */
+
+  function cargar() {
+    try {
+      const cfg = JSON.parse(localStorage.getItem(CLAVES.config) || 'null');
+      if (cfg && typeof cfg === 'object') {
+        state.config = Object.assign({}, CONFIG_POR_DEFECTO, cfg);
+      }
+    } catch (e) { /* configuración dañada: se usa la de por defecto */ }
+
+    try {
+      const nube = JSON.parse(localStorage.getItem(CLAVES.nube) || '[]');
+      if (Array.isArray(nube)) state.nube = normalizarDesdeNube(nube);
+    } catch (e) { state.nube = []; }
+
+    try {
+      const pend = JSON.parse(localStorage.getItem(CLAVES.pendientes) || '[]');
+      if (Array.isArray(pend)) {
+        state.pendientes = pend.filter(function (m) {
+          return m && m.localId && m.fecha && Number(m.monto) > 0;
+        }).map(function (m) {
+          return {
+            localId: m.localId,
+            fecha: m.fecha,
+            tipo: normalizarTipo(m.tipo),
+            descripcion: limpiar(m.descripcion, MAX_DESC),
+            monto: r2(m.monto),
+            categoria: limpiar(m.categoria, MAX_CAT) || 'Otros',
+            moneda: normalizarMoneda(m.moneda),
+            creado: m.creado || Date.now()
+          };
+        });
+      }
+    } catch (e) { state.pendientes = []; }
+  }
+
+  function guardar() {
+    try {
+      localStorage.setItem(CLAVES.config, JSON.stringify(state.config));
+      localStorage.setItem(CLAVES.nube, JSON.stringify(state.nube));
+      localStorage.setItem(CLAVES.pendientes, JSON.stringify(state.pendientes));
+    } catch (e) {
+      toast('No se pudo guardar en el navegador. Revisa el espacio disponible o el modo privado.', 'err');
+    }
+  }
+
+  /** Normaliza lo que llega de Google Sheets. */
+  function normalizarDesdeNube(lista) {
+    const salida = [];
+    (lista || []).forEach(function (x) {
+      if (!x) return;
+      const m = {
+        row: Number(x.row) || 0,
+        fecha: String(x.fecha || '').slice(0, 10),
+        tipo: normalizarTipo(x.tipo),
+        descripcion: limpiar(x.descripcion, MAX_DESC),
+        monto: r2(aNumero(x.monto)),
+        categoria: limpiar(x.categoria, MAX_CAT) || 'Otros',
+        moneda: normalizarMoneda(x.moneda),
+        origen: 'nube'
+      };
+      if (!m.fecha || !(m.monto > 0)) return;
+      m.sig = firma(m);
+      salida.push(m);
+    });
+    return salida;
+  }
+
+  /* ==========================================================================
+     7. LISTAS DERIVADAS
+     ========================================================================== */
+
+  function movimientos() {
+    const lista = [];
+
+    state.nube.forEach(function (m) {
+      lista.push({
+        row: m.row, sig: m.sig, fecha: m.fecha, tipo: m.tipo, descripcion: m.descripcion,
+        monto: m.monto, categoria: m.categoria, moneda: m.moneda, origen: 'nube'
+      });
+    });
+
+    state.pendientes.forEach(function (m) {
+      lista.push({
+        localId: m.localId, creado: m.creado, fecha: m.fecha, tipo: m.tipo,
+        descripcion: m.descripcion, monto: m.monto, categoria: m.categoria,
+        moneda: m.moneda, origen: 'local'
+      });
+    });
+
+    lista.sort(function (a, b) {
+      if (a.fecha !== b.fecha) return a.fecha < b.fecha ? 1 : -1;
+      if (a.origen !== b.origen) return a.origen === 'local' ? -1 : 1;
+      return (b.row || 0) - (a.row || 0) || (b.creado || 0) - (a.creado || 0);
+    });
+
+    return lista;
+  }
+
+  function filtrar(lista) {
+    if (!state.mes) return lista;
+    return lista.filter(function (m) { return String(m.fecha || '').slice(0, 7) === state.mes; });
+  }
+
+  /* ==========================================================================
+     8. RENDER
+     ========================================================================== */
+
+  function render() {
+    const visibles = filtrar(movimientos());
+    renderStats(visibles);
+    renderCategorias(visibles);
+    renderLista(visibles);
+    renderFiltro();
+    renderEstado();
+  }
+
+  function renderStats(visibles) {
+    let ingresos = 0;
+    let gastos = 0;
+    let faltaTasa = false;
+
+    visibles.forEach(function (m) {
+      if (normalizarMoneda(m.moneda) !== state.config.moneda && !(Number(state.config.tasa) > 0)) {
+        faltaTasa = true;
+      }
+      const valor = convertir(m.monto, m.moneda);
+      if (m.tipo === 'ingreso') ingresos += valor;
+      else gastos += valor;
+    });
+
+    const balance = ingresos - gastos;
+
+    const elBalance = el('#statBalance');
+    elBalance.textContent = moneyConSigno(balance);
+    elBalance.className = 'value ' + (balance > 0 ? 'pos' : (balance < 0 ? 'neg' : ''));
+
+    el('#statIngresos').textContent = money(ingresos);
+    el('#statGastos').textContent = money(gastos);
+    el('#statCount').textContent = String(visibles.length);
+
+    const pendientes = state.pendientes.length;
+    el('#statPend').textContent = pendientes
+      ? pendientes + (pendientes === 1 ? ' sin subir a la nube' : ' sin subir a la nube')
+      : 'Todo sincronizado';
+
+    let pista = nombreMes(state.mes);
+    if (Number(state.config.tasa) > 0) {
+      pista += ' · Tasa: ' + formatoNumero.format(Number(state.config.tasa)) + ' Bs/USD';
+    }
+    el('#statHint').textContent = pista;
+
+    el('#avisoTasa').hidden = !faltaTasa;
+  }
+
+  function renderCategorias(visibles) {
+    const cont = el('#listaCategorias');
+    const totalBox = el('#catTotal');
+    const grupos = new Map();
+
+    visibles.forEach(function (m) {
+      if (m.tipo !== state.resumenTipo) return;
+      const clave = m.categoria || 'Otros';
+      grupos.set(clave, (grupos.get(clave) || 0) + convertir(m.monto, m.moneda));
+    });
+
+    const pares = Array.from(grupos.entries()).sort(function (a, b) { return b[1] - a[1]; });
+    const total = pares.reduce(function (acc, p) { return acc + p[1]; }, 0);
+
+    if (!pares.length) {
+      cont.innerHTML = '<p class="hint" style="padding:6px 0">' +
+        (state.resumenTipo === 'gasto' ? 'Sin gastos en el periodo.' : 'Sin ingresos en el periodo.') +
+        '</p>';
+      totalBox.hidden = true;
+      return;
+    }
+
+    cont.innerHTML = pares.map(function (par, i) {
+      const porcentaje = total > 0 ? (par[1] / total) * 100 : 0;
+      const color = COLORES[i % COLORES.length];
+      return '' +
+        '<div class="cat-row">' +
+          '<span class="cat-name">' + esc(par[0]) + '</span>' +
+          '<span class="cat-val">' + money(par[1]) + '</span>' +
+          '<span class="cat-bar"><i style="width:' + porcentaje.toFixed(1) + '%;background:' + color + '"></i></span>' +
+        '</div>';
+    }).join('');
+
+    totalBox.hidden = false;
+    el('#catTotalValor').textContent = money(total);
+  }
+
+  function renderLista(visibles) {
+    const cuerpo = el('#tbody');
+    const tabla = el('#tabla');
+    const vacio = el('#vacio');
+    const contador = el('#contador');
+
+    contador.textContent = visibles.length + (visibles.length === 1 ? ' movimiento' : ' movimientos');
+
+    if (!visibles.length) {
+      cuerpo.innerHTML = '';
+      tabla.hidden = true;
+      vacio.hidden = false;
+      vacio.innerHTML = state.mes
+        ? '<strong>Sin movimientos en este mes.</strong><span>Prueba con «Ver todo» o registra uno nuevo.</span>'
+        : '<strong>Aún no hay movimientos.</strong><span>Registra el primero con el formulario o desde el iPhone.</span>';
+      return;
+    }
+
+    tabla.hidden = false;
+    vacio.hidden = true;
+
+    cuerpo.innerHTML = visibles.map(function (m) {
+      const pendiente = m.origen === 'local';
+      const clase = m.tipo === 'ingreso' ? 'ingreso' : 'gasto';
+      const signo = m.tipo === 'ingreso' ? '+' : '−';
+      const clave = pendiente ? 'local:' + m.localId : 'nube:' + m.row;
+      const etiqueta = m.tipo === 'ingreso' ? 'Ingreso' : 'Gasto';
+
+      // Si el movimiento está en otra moneda, se muestra su valor original
+      // y, debajo, el equivalente en la moneda de visualización.
+      const tasa = Number(state.config.tasa) || 0;
+      const distinta = normalizarMoneda(m.moneda) !== state.config.moneda;
+      const equivalente = (distinta && tasa > 0) ? convertir(m.monto, m.moneda) : null;
+
+      return '<tr>' +
+        '<td class="col-fecha">' + esc(fechaLegible(m.fecha)) + '</td>' +
+        '<td class="col-tipo"><span class="tipo ' + clase + '"><i></i>' + etiqueta + '</span></td>' +
+        '<td class="col-desc desc"><span class="desc-txt">' + esc(m.descripcion || m.categoria || '—') + '</span>' +
+          (pendiente ? '<span class="badge pend">sin subir</span>' : '') + '</td>' +
+        '<td class="col-cat"><span class="cat-tag">' + esc(m.categoria) + '</span></td>' +
+        '<td class="col-monto num ' + clase + '">' + signo + ' ' + moneyEn(m.monto, m.moneda) +
+          (equivalente === null ? '' : '<span class="equiv">≈ ' + money(equivalente) + '</span>') +
+        '</td>' +
+        '<td class="col-acc">' +
+          '<button type="button" class="icon-btn" data-borrar="' + esc(clave) + '" ' +
+            'title="Eliminar movimiento" aria-label="Eliminar movimiento">' + ICONO_BORRAR + '</button>' +
+        '</td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  function renderFiltro() {
+    const input = el('#filtroMes');
+    if (input.value !== state.mes) input.value = state.mes;
+
+    const btn = el('#btnTodo');
+    btn.textContent = state.mes ? 'Ver todo' : 'Viendo todo';
+    btn.disabled = !state.mes;
+
+    const etiqueta = el('#etiquetaPeriodo');
+    etiqueta.textContent = state.mes ? nombreMes(state.mes) : 'Historial completo';
+  }
+
+  function renderEstado() {
+    const pill = el('#pill');
+    const texto = el('#pillTexto');
+    let clase = 'pill';
+    let etiqueta = 'Sin configurar';
+
+    if (!state.config.webhook) {
+      clase += ' warn';
+      etiqueta = 'Configura la nube';
+    } else if (state.sincronizando) {
+      clase += ' sync';
+      etiqueta = 'Sincronizando…';
+    } else if (state.estadoRed === 'err') {
+      clase += ' err';
+      etiqueta = 'Sin conexión';
+    } else if (state.config.ultimaSync) {
+      clase += ' ok';
+      etiqueta = 'Sincronizado ' + hora(state.config.ultimaSync);
+    } else {
+      clase += ' warn';
+      etiqueta = 'Listo para sincronizar';
+    }
+
+    pill.className = clase;
+    pill.title = state.ultimoError || 'Estado de la sincronización';
+    texto.textContent = etiqueta;
+
+    const btn = el('#btnSync');
+    btn.disabled = state.sincronizando;
+    btn.classList.toggle('cargando', state.sincronizando);
+
+    el('#bannerConfig').hidden = !!state.config.webhook;
+  }
+
+  /* ==========================================================================
+     9. RED: LECTURA Y ESCRITURA CONTRA APPS SCRIPT
+     ========================================================================== */
+
+  function leerJSON(texto) {
+    try { return JSON.parse(texto); } catch (e) { return null; }
+  }
+
+  function mensajeError(err) {
+    const msg = (err && err.message) ? err.message : 'Error desconocido';
+    if (/failed to fetch|networkerror|load failed|no se pudo cargar|network request failed/i.test(msg)) {
+      return 'No se pudo conectar con Google Apps Script. Revisa tu internet y que la URL termine en /exec y esté publicada para «Cualquier persona».';
+    }
+    return msg;
+  }
+
+  /**
+   * GET por fetch. Si el navegador bloquea por CORS, reintenta con JSONP
+   * (etiqueta <script>), que no pasa por CORS.
+   */
+  async function apiGet() {
+    const url = String(state.config.webhook || '').trim();
+    if (!url) throw new Error('Falta configurar la URL del webhook.');
+
+    const params = { t: String(Date.now()) };
+    if (state.config.token) params.token = state.config.token;
+
+    const consulta = new URLSearchParams(params).toString();
+    const destino = url + (url.indexOf('?') === -1 ? '?' : '&') + consulta;
+    let datos = null;
+    let primerError = null;
+
+    try {
+      const res = await fetch(destino, { method: 'GET', redirect: 'follow', cache: 'no-store' });
+      if (!res.ok) throw new Error('El servidor respondió HTTP ' + res.status + '.');
+      datos = leerJSON(await res.text());
+      if (!datos) throw new Error('La respuesta no es JSON. ¿Publicaste el script como aplicación web?');
+    } catch (err) {
+      primerError = err;
+      try {
+        datos = await jsonp(url, params);
+      } catch (err2) {
+        throw new Error(mensajeError(primerError));
+      }
+    }
+
+    if (!datos || datos.ok !== true) {
+      throw new Error((datos && datos.error) || 'Respuesta inesperada del servidor.');
+    }
+    return datos;
+  }
+
+  /** Lectura alternativa vía <script> (JSONP). Evita CORS por completo. */
+  function jsonp(url, params) {
+    return new Promise(function (resolve, reject) {
+      const nombre = 'mfcb_' + Math.random().toString(36).slice(2);
+      let terminado = false;
+      const script = document.createElement('script');
+      let temporizador = null;
+
+      function limpiar() {
+        try { delete window[nombre]; } catch (e) { window[nombre] = undefined; }
+        if (script.parentNode) script.parentNode.removeChild(script);
+        if (temporizador) clearTimeout(temporizador);
+      }
+
+      temporizador = setTimeout(function () {
+        if (terminado) return;
+        terminado = true;
+        limpiar();
+        reject(new Error('Tiempo de espera agotado al consultar Google.'));
+      }, 20000);
+
+      window[nombre] = function (datos) {
+        if (terminado) return;
+        terminado = true;
+        limpiar();
+        resolve(datos);
+      };
+
+      script.onerror = function () {
+        if (terminado) return;
+        terminado = true;
+        limpiar();
+        reject(new Error('No se pudo cargar la URL del webhook.'));
+      };
+
+      let destino;
+      try {
+        destino = new URL(url);
+        Object.keys(params).forEach(function (k) { destino.searchParams.set(k, params[k]); });
+        destino.searchParams.set('callback', nombre);
+      } catch (e) {
+        reject(new Error('La URL del webhook no es válida.'));
+        return;
+      }
+
+      script.src = destino.toString();
+      document.head.appendChild(script);
+    });
+  }
+
+  /**
+   * POST contra Apps Script.
+   * Importante: NO se envía la cabecera Content-Type. Al pasar un string,
+   * el navegador usa text/plain, que es una petición "simple" y no dispara
+   * el preflight OPTIONS (Apps Script no lo responde).
+   */
+  async function apiPost(payload) {
+    const url = String(state.config.webhook || '').trim();
+    if (!url) throw new Error('Falta configurar la URL del webhook.');
+
+    const cuerpo = JSON.stringify(
+      Object.assign({}, payload, state.config.token ? { token: state.config.token } : {})
+    );
+
+    let res;
+    try {
+      res = await fetch(url, { method: 'POST', body: cuerpo, redirect: 'follow' });
+    } catch (err) {
+      // Último recurso: modo opaco. No se puede leer la respuesta,
+      // pero la escritura suele completarse. Se confirma en la próxima sync.
+      try {
+        await fetch(url, { method: 'POST', mode: 'no-cors', body: cuerpo });
+        return { ok: true, sinConfirmar: true };
+      } catch (err2) {
+        throw new Error(mensajeError(err));
+      }
+    }
+
+    const texto = await res.text();
+    const datos = leerJSON(texto);
+    if (!datos) {
+      throw new Error('El servidor no devolvió JSON. Revisa que la implementación sea de tipo «Aplicación web».');
+    }
+    if (datos.ok === false) {
+      throw new Error(datos.error || 'El servidor rechazó la operación.');
+    }
+    return datos;
+  }
+
+  /* ==========================================================================
+     10. SINCRONIZACIÓN
+     ========================================================================== */
+
+  /** Quita de pendientes los que ya existen en la hoja (evita duplicados). */
+  function reconciliar() {
+    if (!state.pendientes.length) return;
+    const firmas = new Set(state.nube.map(function (m) { return m.sig; }));
+    state.pendientes = state.pendientes.filter(function (p) {
+      return !firmas.has(firma(p));
+    });
+  }
+
+  async function sincronizar(opciones) {
+    const opt = opciones || {};
+    if (state.sincronizando) return;
+
+    if (!state.config.webhook) {
+      renderEstado();
+      if (!opt.silencioso) toast('Primero configura la URL del webhook en Ajustes ⚙.', 'warn');
+      return;
+    }
+
+    const estadoPrevio = state.estadoRed;
+    state.sincronizando = true;
+    renderEstado();
+
+    try {
+      // 1. Leer la hoja
+      const datos = await apiGet();
+      state.nube = normalizarDesdeNube(datos.movimientos);
+      reconciliar();
+
+      // 2. Subir lo que quedó pendiente
+      if (state.pendientes.length) {
+        const lote = state.pendientes.map(function (m) {
+          return {
+            fecha: m.fecha,
+            tipo: m.tipo,
+            descripcion: m.descripcion,
+            monto: m.monto,
+            categoria: m.categoria,
+            moneda: m.moneda
+          };
+        });
+
+        const respuesta = await apiPost({ action: 'bulk', movimientos: lote });
+        if (respuesta && respuesta.ok === false) {
+          throw new Error(respuesta.error || 'No se pudieron subir los movimientos pendientes.');
+        }
+
+        // 3. Releer para obtener las filas reales
+        const datos2 = await apiGet();
+        state.nube = normalizarDesdeNube(datos2.movimientos);
+        reconciliar();
+      }
+
+      state.config.ultimaSync = Date.now();
+      state.estadoRed = 'ok';
+      state.ultimoError = '';
+      guardar();
+      render();
+
+      if (!opt.silencioso) {
+        if (state.pendientes.length) {
+          toast('Sincronizado, pero quedan ' + state.pendientes.length + ' movimiento(s) sin subir. Vuelve a intentar.', 'warn');
+        } else {
+          const n = state.nube.length;
+          toast('Sincronizado · ' + n + (n === 1 ? ' movimiento' : ' movimientos'), 'ok');
+        }
+      }
+    } catch (err) {
+      state.estadoRed = 'err';
+      state.ultimoError = mensajeError(err);
+      render();
+      if (!opt.silencioso || estadoPrevio !== 'err') {
+        toast(state.ultimoError, 'err');
+      }
+    } finally {
+      state.sincronizando = false;
+      guardar();
+      renderEstado();
+    }
+  }
+
+  /** Sincronización de fondo al volver a la pestaña (máx. 1 vez por minuto). */
+  function syncAutomatica() {
+    if (!state.config.webhook || !state.config.autoSync || state.sincronizando) return;
+    if (Date.now() - (state.config.ultimaSync || 0) < 60000) return;
+    sincronizar({ silencioso: true });
+  }
+
+  /* ==========================================================================
+     11. ALTA Y BAJA DE MOVIMIENTOS
+     ========================================================================== */
+
+  function agregarMovimiento(datos) {
+    const mov = {
+      localId: uid(),
+      fecha: datos.fecha,
+      tipo: datos.tipo,
+      descripcion: datos.descripcion,
+      monto: r2(datos.monto),
+      categoria: datos.categoria,
+      moneda: datos.moneda,
+      creado: Date.now()
+    };
+    state.pendientes.push(mov);
+    guardar();
+    render();
+    return mov;
+  }
+
+  async function borrarMovimiento(clave) {
+    const partes = String(clave).split(':');
+    const origen = partes[0];
+    const id = partes[1];
+
+    if (origen === 'local') {
+      state.pendientes = state.pendientes.filter(function (m) { return m.localId !== id; });
+      guardar();
+      render();
+      toast('Movimiento eliminado de este equipo.', 'ok');
+      return;
+    }
+
+    const fila = Number(id);
+    const mov = state.nube.find(function (m) { return m.row === fila; });
+    if (!mov) return;
+
+    const descripcion = mov.descripcion || mov.categoria || 'sin descripción';
+    if (!window.confirm('¿Eliminar «' + descripcion + '» del ' + fechaLegible(mov.fecha) + '?\n\nSe borrará también de Google Sheets.')) {
+      return;
+    }
+
+    try {
+      state.sincronizando = true;
+      renderEstado();
+
+      const respuesta = await apiPost({ action: 'delete', row: mov.row, sig: mov.sig });
+      if (respuesta && respuesta.ok === false) {
+        throw new Error(respuesta.error || 'El servidor rechazó la eliminación.');
+      }
+
+      state.nube = state.nube.filter(function (m) { return m.row !== mov.row; });
+      guardar();
+      render();
+      toast(respuesta && respuesta.sinConfirmar
+        ? 'Eliminación enviada. Se confirmará en la próxima sincronización.'
+        : 'Movimiento eliminado de Google Sheets.', 'ok');
+    } catch (err) {
+      toast(mensajeError(err), 'err');
+    } finally {
+      state.sincronizando = false;
+      renderEstado();
+    }
+  }
+
+  /* ==========================================================================
+     12. CSV
+     ========================================================================== */
+
+  function csvCampo(valor) {
+    const s = String(valor === null || valor === undefined ? '' : valor);
+    if (/[",\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  }
+
+  function exportarCSV() {
+    const filas = [['Fecha', 'Tipo', 'Descripción', 'Monto', 'Categoría', 'Moneda']];
+
+    movimientos().forEach(function (m) {
+      filas.push([m.fecha, m.tipo, m.descripcion, String(m.monto), m.categoria, m.moneda]);
+    });
+
+    const contenido = filas.map(function (f) { return f.map(csvCampo).join(','); }).join('\r\n');
+    // BOM para que Excel reconozca los acentos.
+    const blob = new Blob(['\ufeff' + contenido], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    const enlace = document.createElement('a');
+    enlace.href = url;
+    enlace.download = 'movimientos-' + hoyISO() + '.csv';
+    document.body.appendChild(enlace);
+    enlace.click();
+    document.body.removeChild(enlace);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+
+    toast('Respaldo descargado: ' + (filas.length - 1) + ' movimiento(s).', 'ok');
+  }
+
+  /**
+   * Detecta el separador mirando la primera línea (fuera de comillas).
+   * Así un CSV con ";" puede contener "12,50" sin romperse.
+   */
+  function detectarDelimitador(texto) {
+    const lineas = String(texto).replace(/^\ufeff/, '').split(/\r?\n/);
+    let linea = '';
+    for (let i = 0; i < lineas.length; i++) {
+      if (lineas[i].trim() !== '') { linea = lineas[i]; break; }
+    }
+
+    const cuenta = { ',': 0, ';': 0, '\t': 0 };
+    let comillas = false;
+
+    for (let i = 0; i < linea.length; i++) {
+      const c = linea[i];
+      if (c === '"') comillas = !comillas;
+      else if (!comillas && cuenta[c] !== undefined) cuenta[c]++;
+    }
+
+    let mejor = ',';
+    Object.keys(cuenta).forEach(function (k) {
+      if (cuenta[k] > cuenta[mejor]) mejor = k;
+    });
+    return mejor;
+  }
+
+  /** Parser CSV: respeta comillas, saltos de línea y el separador detectado. */
+  function parseCSV(texto, delimitador) {
+    const limpio = String(texto).replace(/^\ufeff/, '');
+    const sep = delimitador || detectarDelimitador(limpio);
+    const filas = [];
+    let campo = '';
+    let fila = [];
+    let entreComillas = false;
+
+    for (let i = 0; i < limpio.length; i++) {
+      const c = limpio[i];
+
+      if (entreComillas) {
+        if (c === '"') {
+          if (limpio[i + 1] === '"') { campo += '"'; i++; }
+          else entreComillas = false;
+        } else {
+          campo += c;
+        }
+        continue;
+      }
+
+      if (c === '"') entreComillas = true;
+      else if (c === sep) { fila.push(campo); campo = ''; }
+      else if (c === '\n') { fila.push(campo); filas.push(fila); fila = []; campo = ''; }
+      else if (c === '\r') { /* ignorar */ }
+      else campo += c;
+    }
+
+    if (campo !== '' || fila.length) { fila.push(campo); filas.push(fila); }
+
+    return filas.filter(function (f) {
+      return f.some(function (v) { return String(v).trim() !== ''; });
+    });
+  }
+
+  function sinAcentos(s) {
+    return String(s || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim();
+  }
+
+  function importarCSV(texto) {
+    const filas = parseCSV(texto);
+    if (!filas.length) {
+      toast('El archivo está vacío.', 'err');
+      return;
+    }
+
+    // ¿La primera fila es un encabezado?
+    const primera = filas[0].map(sinAcentos);
+    const tieneCabecera = primera.indexOf('fecha') > -1 || primera.indexOf('monto') > -1;
+
+    const indices = { fecha: 0, tipo: 1, descripcion: 2, monto: 3, categoria: 4, moneda: 5 };
+    if (tieneCabecera) {
+      primera.forEach(function (nombre, i) {
+        if (nombre === 'fecha') indices.fecha = i;
+        else if (nombre === 'tipo') indices.tipo = i;
+        else if (nombre.indexOf('descripcion') === 0) indices.descripcion = i;
+        else if (nombre === 'monto' || nombre === 'valor') indices.monto = i;
+        else if (nombre.indexOf('categoria') === 0) indices.categoria = i;
+        else if (nombre === 'moneda') indices.moneda = i;
+      });
+    }
+
+    const datos = tieneCabecera ? filas.slice(1) : filas;
+    const nuevos = [];
+    let omitidos = 0;
+
+    datos.forEach(function (fila) {
+      const monto = aNumero(fila[indices.monto]);
+      if (!isFinite(monto) || monto <= 0) { omitidos++; return; }
+
+      let fecha = String(fila[indices.fecha] || '').trim();
+      const iso = fecha.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (iso) {
+        fecha = iso[1] + '-' + iso[2] + '-' + iso[3];
+      } else {
+        const dmy = fecha.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+        if (dmy) {
+          fecha = dmy[3] + '-' + dosDigitos(Number(dmy[2])) + '-' + dosDigitos(Number(dmy[1]));
+        } else {
+          omitidos++;
+          return;
+        }
+      }
+
+      nuevos.push({
+        localId: uid(),
+        fecha: fecha,
+        tipo: normalizarTipo(fila[indices.tipo]),
+        descripcion: limpiar(fila[indices.descripcion], MAX_DESC),
+        monto: r2(monto),
+        categoria: limpiar(fila[indices.categoria], MAX_CAT) || 'Otros',
+        moneda: normalizarMoneda(fila[indices.moneda]),
+        creado: Date.now()
+      });
+    });
+
+    // Se añaden todos de una vez para no re-renderizar fila por fila.
+    if (nuevos.length) {
+      state.pendientes = state.pendientes.concat(nuevos);
+      guardar();
+      render();
+    }
+
+    const importados = nuevos.length;
+
+    if (importados) {
+      toast('Importados ' + importados + ' movimiento(s).' +
+        (omitidos ? ' Se omitieron ' + omitidos + ' fila(s) inválida(s).' : ''), 'ok');
+      if (state.config.webhook) sincronizar({ silencioso: true });
+    } else {
+      toast('No se pudo importar ninguna fila válida.' + (omitidos ? ' Revisa fechas y montos.' : ''), 'err');
+    }
+  }
+
+  /* ==========================================================================
+     13. AVISOS
+     ========================================================================== */
+
+  function toast(mensaje, tipo) {
+    const cont = el('#toasts');
+    if (!cont) return;
+
+    while (cont.children.length >= 3) cont.removeChild(cont.firstChild);
+
+    const div = document.createElement('div');
+    div.className = 'toast ' + (tipo || '');
+    div.textContent = mensaje;
+    cont.appendChild(div);
+
+    setTimeout(function () {
+      div.style.transition = 'opacity .25s, transform .25s';
+      div.style.opacity = '0';
+      div.style.transform = 'translateY(6px)';
+      setTimeout(function () { if (div.parentNode) div.parentNode.removeChild(div); }, 260);
+    }, 4200);
+  }
+
+  /* ==========================================================================
+     14. EVENTOS
+     ========================================================================== */
+
+  function actualizarCategorias() {
+    const seleccionado = document.querySelector('input[name="tipo"]:checked');
+    const tipo = seleccionado ? seleccionado.value : 'gasto';
+    const select = el('#categoria');
+    const previo = select.value;
+
+    select.innerHTML = CATEGORIAS[tipo].map(function (c) {
+      return '<option value="' + esc(c) + '">' + esc(c) + '</option>';
+    }).join('');
+
+    if (CATEGORIAS[tipo].indexOf(previo) > -1) select.value = previo;
+  }
+
+  function limpiarFormulario() {
+    el('#monto').value = '';
+    el('#descripcion').value = '';
+    el('#fecha').value = hoyISO();
+    el('#errorForm').hidden = true;
+    el('#monto').focus();
+  }
+
+  function enlazarEventos() {
+    // --- Formulario ---
+    el('#formMov').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const error = el('#errorForm');
+      const monto = aNumero(el('#monto').value);
+      const fecha = el('#fecha').value || hoyISO();
+
+      if (!isFinite(monto) || monto <= 0) {
+        error.textContent = 'Escribe un monto válido mayor que cero.';
+        error.hidden = false;
+        el('#monto').focus();
+        return;
+      }
+
+      const tipo = document.querySelector('input[name="tipo"]:checked').value;
+
+      agregarMovimiento({
+        fecha: fecha,
+        tipo: tipo,
+        descripcion: limpiar(el('#descripcion').value, 120),
+        monto: monto,
+        categoria: el('#categoria').value || 'Otros',
+        moneda: el('#moneda').value
+      });
+
+      limpiarFormulario();
+      toast('Movimiento guardado.', 'ok');
+
+      if (state.config.webhook) {
+        sincronizar({ silencioso: true });
+      } else {
+        toast('Solo se guardó en este equipo. Configura la nube para respaldarlo.', 'warn');
+      }
+    });
+
+    document.querySelectorAll('input[name="tipo"]').forEach(function (radio) {
+      radio.addEventListener('change', actualizarCategorias);
+    });
+
+    // --- Resumen por categoría ---
+    document.querySelectorAll('input[name="resumen"]').forEach(function (radio) {
+      radio.addEventListener('change', function () {
+        state.resumenTipo = this.value === 'ingreso' ? 'ingreso' : 'gasto';
+        renderCategorias(filtrar(movimientos()));
+      });
+    });
+
+    // --- Sincronizar ---
+    el('#btnSync').addEventListener('click', function () { sincronizar(); });
+    el('#pill').addEventListener('click', abrirConfig);
+
+    // --- Filtro por mes ---
+    el('#filtroMes').addEventListener('change', function () {
+      state.mes = this.value;
+      render();
+    });
+
+    el('#btnTodo').addEventListener('click', function () {
+      state.mes = '';
+      el('#filtroMes').value = '';
+      render();
+    });
+
+    // --- Eliminar (delegación de eventos) ---
+    el('#tbody').addEventListener('click', function (e) {
+      const boton = e.target.closest('[data-borrar]');
+      if (!boton) return;
+      borrarMovimiento(boton.getAttribute('data-borrar'));
+    });
+
+    // --- CSV ---
+    el('#btnExportar').addEventListener('click', exportarCSV);
+
+    el('#btnImportar').addEventListener('click', function () {
+      el('#archivoCSV').click();
+    });
+
+    el('#archivoCSV').addEventListener('change', function () {
+      const archivo = this.files && this.files[0];
+      if (!archivo) return;
+
+      const lector = new FileReader();
+      lector.onload = function () {
+        try { importarCSV(String(lector.result || '')); }
+        catch (err) { toast('No se pudo leer el CSV: ' + err.message, 'err'); }
+        el('#archivoCSV').value = '';
+      };
+      lector.onerror = function () {
+        toast('No se pudo leer el archivo.', 'err');
+        el('#archivoCSV').value = '';
+      };
+      lector.readAsText(archivo, 'UTF-8');
+    });
+
+    // --- Ajustes ---
+    el('#btnConfig').addEventListener('click', abrirConfig);
+    el('#btnConfigBanner').addEventListener('click', abrirConfig);
+    el('#btnTasa').addEventListener('click', abrirConfig);
+    el('#btnCerrarDlg').addEventListener('click', cerrarConfig);
+    el('#btnCancelar').addEventListener('click', cerrarConfig);
+
+    el('#formConfig').addEventListener('submit', function (e) {
+      e.preventDefault();
+      guardarConfigDesdeDialogo();
+    });
+
+    el('#btnProbar').addEventListener('click', probarConexion);
+    el('#btnLimpiar').addEventListener('click', borrarCache);
+
+    // --- Sincronización automática al volver a la pestaña ---
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) syncAutomatica();
+    });
+    window.addEventListener('focus', syncAutomatica);
+  }
+
+  /* ==========================================================================
+     15. DIÁLOGO DE AJUSTES
+     ========================================================================== */
+
+  function abrirConfig() {
+    el('#cfgWebhook').value = state.config.webhook || '';
+    el('#cfgToken').value = state.config.token || '';
+    el('#cfgMoneda').value = state.config.moneda;
+    el('#cfgTasa').value = Number(state.config.tasa) > 0
+      ? String(state.config.tasa).replace('.', ',')
+      : '';
+    el('#cfgAuto').checked = !!state.config.autoSync;
+
+    const dlg = el('#dlgConfig');
+    if (typeof dlg.showModal === 'function') {
+      if (!dlg.open) dlg.showModal();
+    } else {
+      dlg.setAttribute('open', 'open');
+    }
+  }
+
+  function cerrarConfig() {
+    const dlg = el('#dlgConfig');
+    if (typeof dlg.close === 'function') dlg.close();
+    else dlg.removeAttribute('open');
+  }
+
+  function leerConfigDelDialogo() {
+    const url = el('#cfgWebhook').value.trim();
+    const tasa = aNumero(el('#cfgTasa').value);
+
+    return {
+      webhook: url,
+      token: el('#cfgToken').value.trim(),
+      moneda: el('#cfgMoneda').value === 'VES' ? 'VES' : 'USD',
+      tasa: isFinite(tasa) && tasa > 0 ? r2(tasa) : 0,
+      autoSync: el('#cfgAuto').checked
+    };
+  }
+
+  function guardarConfigDesdeDialogo() {
+    const nueva = leerConfigDelDialogo();
+
+    if (nueva.webhook && !/\/exec(\?|$)/.test(nueva.webhook)) {
+      toast('Aviso: la URL normalmente debe terminar en /exec.', 'warn');
+    }
+
+    state.config = Object.assign({}, state.config, nueva);
+    state.estadoRed = 'ok';
+    state.ultimoError = '';
+    guardar();
+    render();
+    cerrarConfig();
+    toast('Ajustes guardados.', 'ok');
+
+    if (state.config.webhook && state.config.autoSync) sincronizar({ silencioso: true });
+  }
+
+  async function probarConexion() {
+    const boton = el('#btnProbar');
+    const previo = Object.assign({}, state.config);
+    const prueba = leerConfigDelDialogo();
+
+    if (!prueba.webhook) {
+      toast('Escribe primero la URL del webhook.', 'warn');
+      el('#cfgWebhook').focus();
+      return;
+    }
+
+    state.config.webhook = prueba.webhook;
+    state.config.token = prueba.token;
+    boton.disabled = true;
+    boton.textContent = 'Probando…';
+
+    try {
+      const datos = await apiGet();
+      const total = Array.isArray(datos.movimientos) ? datos.movimientos.length : 0;
+      toast('Conexión correcta · ' + total + ' movimiento(s) en la hoja.', 'ok');
+    } catch (err) {
+      toast(mensajeError(err), 'err');
+    } finally {
+      state.config = previo;
+      boton.disabled = false;
+      boton.textContent = 'Probar conexión';
+    }
+  }
+
+  function borrarCache() {
+    const respuesta = window.confirm(
+      'Se borrarán los datos guardados en este navegador (no la hoja de Google).\n\n' +
+      'Los movimientos que aún no se hayan subido se perderán. ¿Continuar?'
+    );
+    if (!respuesta) return;
+
+    try {
+      localStorage.removeItem(CLAVES.nube);
+      localStorage.removeItem(CLAVES.pendientes);
+    } catch (e) { /* nada */ }
+
+    state.nube = [];
+    state.pendientes = [];
+    state.config.ultimaSync = 0;
+    guardar();
+    render();
+    cerrarConfig();
+    toast('Caché local borrada. Sincroniza para volver a descargar la hoja.', 'ok');
+  }
+
+  /* ==========================================================================
+     16. ARRANQUE
+     ========================================================================== */
+
+  function iniciar() {
+    cargar();
+
+    // La URL escrita en el código tiene prioridad solo si no hay una guardada.
+    if (WEBHOOK_URL && !state.config.webhook) {
+      state.config.webhook = WEBHOOK_URL.trim();
+      guardar();
+    }
+
+    el('#fecha').value = hoyISO();
+    el('#moneda').value = state.config.moneda;
+    actualizarCategorias();
+    enlazarEventos();
+    render();
+
+    if (modoNuevo()) prepararCapturaRapida();
+
+    if (state.config.webhook && state.config.autoSync) {
+      sincronizar({ silencioso: true });
+    }
+  }
+
+  /** Deja la pantalla lista para escribir el monto (uso desde el Back Tap). */
+  function prepararCapturaRapida() {
+    setTimeout(function () {
+      const tarjeta = el('#formCard');
+      if (tarjeta && tarjeta.scrollIntoView) {
+        tarjeta.scrollIntoView({ block: 'start' });
+      }
+      const campo = el('#monto');
+      if (campo) {
+        try { campo.focus({ preventScroll: true }); } catch (e) { campo.focus(); }
+      }
+    }, 300);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', iniciar);
+  } else {
+    iniciar();
+  }
+})();
+</script>
+</body>
+</html>
